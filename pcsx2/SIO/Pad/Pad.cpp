@@ -3,6 +3,7 @@
 
 #include "Host.h"
 #include "Input/InputManager.h"
+#include "Netplay/Netplay.h"
 #include "SIO/Pad/Pad.h"
 #include "SIO/Pad/PadDualshock2.h"
 #include "SIO/Pad/PadGuitar.h"
@@ -553,6 +554,10 @@ PadBase* Pad::GetPad(const u8 unifiedSlot)
 void Pad::SetControllerState(u32 controller, u32 bind, float value)
 {
 	if (controller >= NUM_CONTROLLER_PORTS)
+		return;
+
+	// During an online match, local input is routed through netplay instead.
+	if (Netplay::HandleControllerState(controller, bind, value))
 		return;
 
 	s_controllers[controller]->Set(bind, value);

@@ -1142,6 +1142,21 @@
     <ClCompile Include="Recording\PadData.cpp">
       <Filter>Tools\Input Recording</Filter>
     </ClCompile>
+    <ClCompile Include="Netplay\LockstepSession.cpp">
+      <Filter>Tools\Input Recording</Filter>
+    </ClCompile>
+    <ClCompile Include="Netplay\Netplay.cpp">
+      <Filter>Tools\Input Recording</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\LuaAll.cpp">
+      <Filter>Tools\Input Recording</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\Mods.cpp">
+      <Filter>Tools\Input Recording</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ScriptRuntime.cpp">
+      <Filter>Tools\Input Recording</Filter>
+    </ClCompile>
     <ClCompile Include="Recording\Utilities\InputRecordingLogger.cpp">
       <Filter>Tools\Input Recording\Utilities</Filter>
     </ClCompile>
@@ -2059,6 +2074,18 @@
       <Filter>Tools\Input Recording</Filter>
     </ClInclude>
     <ClInclude Include="Recording\PadData.h">
+      <Filter>Tools\Input Recording</Filter>
+    </ClInclude>
+    <ClInclude Include="Netplay\LockstepSession.h">
+      <Filter>Tools\Input Recording</Filter>
+    </ClInclude>
+    <ClInclude Include="Netplay\Netplay.h">
+      <Filter>Tools\Input Recording</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\Mods.h">
+      <Filter>Tools\Input Recording</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ScriptRuntime.h">
       <Filter>Tools\Input Recording</Filter>
     </ClInclude>
     <ClInclude Include="Recording\Utilities\InputRecordingLogger.h">

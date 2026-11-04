@@ -376,6 +376,14 @@
     <ClCompile Include="Recording\InputRecordingControls.cpp" />
     <ClCompile Include="Recording\InputRecordingFile.cpp" />
     <ClCompile Include="Recording\PadData.cpp" />
+    <ClCompile Include="Netplay\LockstepSession.cpp" />
+    <ClCompile Include="Netplay\Netplay.cpp" />
+    <ClCompile Include="Mods\LuaAll.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="Mods\Mods.cpp" />
+    <ClCompile Include="Mods\ScriptRuntime.cpp" />
     <ClCompile Include="Recording\Utilities\InputRecordingLogger.cpp" />
     <ClCompile Include="SIO\Memcard\MemoryCardFile.cpp" />
     <ClCompile Include="SIO\Memcard\MemoryCardFolder.cpp" />
@@ -823,6 +831,10 @@
     <ClInclude Include="Recording\InputRecordingControls.h" />
     <ClInclude Include="Recording\InputRecordingFile.h" />
     <ClInclude Include="Recording\PadData.h" />
+    <ClInclude Include="Netplay\LockstepSession.h" />
+    <ClInclude Include="Netplay\Netplay.h" />
+    <ClInclude Include="Mods\Mods.h" />
+    <ClInclude Include="Mods\ScriptRuntime.h" />
     <ClInclude Include="Recording\Utilities\InputRecordingLogger.h" />
     <ClInclude Include="ShaderCacheVersion.h" />
     <ClInclude Include="SIO\Memcard\MemoryCardFile.h" />

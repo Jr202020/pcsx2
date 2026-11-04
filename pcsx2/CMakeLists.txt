@@ -971,6 +971,11 @@ set(pcsx2RecordingSources
 	${rec_src}/InputRecordingFile.cpp
 	${rec_src}/PadData.cpp
 	${rec_src}/Utilities/InputRecordingLogger.cpp
+	Netplay/LockstepSession.cpp
+	Netplay/Netplay.cpp
+	Mods/LuaAll.cpp
+	Mods/Mods.cpp
+	Mods/ScriptRuntime.cpp
 )
 
 # Recording headers
@@ -980,6 +985,10 @@ set(pcsx2RecordingHeaders
 	${rec_src}/InputRecordingFile.h
 	${rec_src}/PadData.h
 	${rec_src}/Utilities/InputRecordingLogger.h
+	Netplay/LockstepSession.h
+	Netplay/Netplay.h
+	Mods/Mods.h
+	Mods/ScriptRuntime.h
 )
 
 # Windows sources
@@ -1216,6 +1225,8 @@ target_include_directories(PCSX2_FLAGS INTERFACE
 )
 
 set_source_files_properties(PrecompiledHeader.cpp PROPERTIES HEADER_FILE_ONLY TRUE)
+# Lua (game scripts) is built on its own, without PCSX2's precompiled header.
+set_source_files_properties(Mods/LuaAll.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 if(COMMAND target_precompile_headers)
 	message("Using precompiled headers.")
 	target_precompile_headers(PCSX2_FLAGS INTERFACE PrecompiledHeader.h)

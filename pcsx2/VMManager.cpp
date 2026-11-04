@@ -30,6 +30,8 @@
 #include "PerformanceMetrics.h"
 #include "R3000A.h"
 #include "R5900.h"
+#include "Mods/Mods.h"
+#include "Netplay/Netplay.h"
 #include "Recording/InputRecording.h"
 #include "Recording/InputRecordingControls.h"
 #include "SIO/Memcard/MemoryCardFile.h"
@@ -269,6 +271,11 @@ void VMManager::ResetResumeTimestamp()
 
 void VMManager::SetState(VMState state)
 {
+	// Online matches can't be paused from the emulator side (pause hotkeys, menus, focus loss,
+	// achievements): it would freeze the other player's game. SetPaused() explains this to the player.
+	if (state == VMState::Paused && Netplay::IsActive())
+		return;
+
 	// Some state transitions aren't valid.
 	const VMState old_state = s_state.load(std::memory_order_acquire);
 	pxAssert(state != VMState::Initializing && state != VMState::Shutdown);
@@ -1718,6 +1725,10 @@ void VMManager::Shutdown(bool save_resume_state)
 	if (g_InputRecording.isActive())
 		g_InputRecording.stop();
 
+	// tell the online opponent we've left
+	Netplay::Shutdown();
+	Mods::Shutdown();
+
 	SaveSessionTime(s_disc_serial);
 	s_elf_override = {};
 	s_game_settings_override = {};
@@ -1940,6 +1951,12 @@ bool VMManager::DoLoadState(const char* filename, Error* error)
 	if (GSDumpReplayer::IsReplayingDump())
 	{
 		Error::SetString(error, TRANSLATE_STR("VMManager", "Cannot load state while replaying a GS dump."));
+		return false;
+	}
+	if (Netplay::IsActive())
+	{
+		// Loading a state on one side only would put the two games out of sync.
+		Error::SetString(error, TRANSLATE_STR("VMManager", "Cannot load state during an online match."));
 		return false;
 	}
 	GSCapture::FlushAudioOnly();
@@ -2368,6 +2385,13 @@ void VMManager::FrameAdvance(u32 num_frames /*= 1*/)
 		Host::AddIconOSDMessage("FrameAdvanceHardcoreBlocked", ICON_FA_TRIANGLE_EXCLAMATION,
 			TRANSLATE_SV("VMManager", "Cannot frame advance while RetroAchievements Hardcore Mode is active."),
 			Host::OSD_WARNING_DURATION);
+		return;
+	}
+
+	if (Netplay::IsActive())
+	{
+		Host::AddIconOSDMessage("NetplayNoFrameAdvance", ICON_FA_PAUSE,
+			TRANSLATE_STR("VMManager", "Frame advance is off during online matches."), Host::OSD_INFO_DURATION);
 		return;
 	}
 
@@ -2820,6 +2844,16 @@ void VMManager::SetPaused(bool paused)
 	if (!HasValidVM())
 		return;
 
+	// During an online match, pausing one emulator freezes the other player's game (it waits for
+	// inputs that never come) and eventually ends the match. Use the game's own pause instead.
+	if (paused && Netplay::IsActive())
+	{
+		Host::AddIconOSDMessage("NetplayNoPause", ICON_FA_PAUSE,
+			TRANSLATE_STR("VMManager", "Pausing is off during online matches. Use the game's own pause (Start) instead."),
+			Host::OSD_INFO_DURATION);
+		return;
+	}
+
 	Console.WriteLn(paused ? "(VMManager) Pausing..." : "(VMManager) Resuming...");
 	SetState(paused ? VMState::Paused : VMState::Running);
 }
@@ -2976,6 +3010,11 @@ void VMManager::Internal::PollInputOnCPUThread()
 {
 	Host::PumpMessagesOnCPUThread();
 	InputManager::PollSources();
+
+	// Online play: exchange inputs with the other players and write everyone's pads for this frame.
+	Netplay::OnFrame();
+	// N2Sphere game script (co-op mod) in single player; online, netplay runs it inside its frame.
+	Mods::OnFrameOffline();
 
 	if (EmuConfig.EnableRecordingTools)
 	{
